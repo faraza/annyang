@@ -1,29 +1,68 @@
 <html>
   <head>
-    <script src="speakClient.js"></script>
     <script src="annyang.js"></script>
+    <script src="spotify.js"></script>
   </head>
   <body>
     <div id="audio"></div>
 
   </body>
   <script type="text/javascript">
-    if (annyang) {
-
-      var sayThis = function(repeat) {
-        speak(repeat);
+    function playSong(song){
+      var audio = new Audio
+      spotify = new SpotifyWebApi();
+      var query = song;
+      
+      
+      spotify.searchTracks(query).then(function(response) {
+      if (response.tracks.items.length) {
+        var track = response.tracks.items[0];
+        audio.src = track.preview_url;
+        audio.play();
+        //communicateAction('<div>Playing ' + track.name + ' by ' + track.artists[0].name + '</div><img width="150" src="' + track.album.images[1].url + '">');
       }
+    });
+      
+    }
+    
+    function parseLyric(lyric){
+      console.log(lyric);
+    }
+    
+    
+    if (annyang) {
+      
+      console.log("We've just begun");
 
-      // Let's define a command.
       var commands = {
-        '*repeat': sayThis
+        'print *word': function(word){
+          console.log(word);
+        },
+        'hello': function(){
+          console.log("I heard hello");
+        },
+        
+        'play *song': function(song){
+          playSong(song)
+        },
+
+        'My Jam is *lyric': function(lyric){
+          parseLyric(lyric);
+        }
       };
 
       // Turn on debugging for the console
       annyang.debug();
-
+  
+  
+      
+      var printThis = function(word) {
+        console.log(word);
+      }
+      
+      
       // Initialize annyang with our commands
-      annyang.init(commands);
+      annyang.addCommands(commands);
 
       // Start listening.
       annyang.start();
